@@ -1,0 +1,58 @@
+SELECT B.Title, LB.Branch_Name, julianday(BL.Returned_date) - julianday(BL.Date_Out) AS Days_out
+FROM BOOK B
+JOIN BOOK_LOANS BL ON B.Book_Id = BL.Book_Id
+JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+WHERE BL.Date_Out BETWEEN '2022-03-05' AND '2022-03-23';
+
+SELECT B.Name
+FROM BORROWER B
+JOIN BOOK_LOANS BL ON B.Card_No = BL.Card_No
+WHERE BL.Returned_date = ‘NULL’;
+
+CREATE VIEW BRANCH_BOOKS_REPORT (BRANCH_ID, BRANCH_NAME, BOOKS_RETURNED, LATE_BOOKS, STILL_BORROWED_BOOKS) AS
+SELECT LB.Branch_Id, LB.Branch_Name, SUM(CASE WHEN BL.Returned_date IS NOT NULL THEN 1 ELSE 0 END), SUM(CASE WHEN BL.Returned_date IS NULL AND CURRENT_DATE > BL.Due_Date THEN 1 ELSE 0 END), SUM(CASE WHEN BL.Returned_date IS NULL AND CURRENT_DATE <= BL.Due_Date THEN 1 ELSE 0 END)
+FROM LIBRARY_BRANCH LB
+JOIN BOOK_LOANS BL ON LB.Branch_Id = BL.Branch_Id
+GROUP BY LB.Branch_Id, LB.Branch_Name;
+
+SELECT B.Title, MAX(DATEDIFF(BL.Returned_date, BL.Date_Out))
+FROM BOOK B
+JOIN BOOK_LOANS BL ON B.Book_Id = BL.Book_Id
+GROUP BY B.Title;
+
+CREATE VIEW	REPORT_FOR_ETHAN_MARTINEZ (BOOK_TITLE, BOOK_AUTHOR, DAYS_BORROWED) AS
+SELECT B.Title, BA.Author_Name, DATEDIFF(BL.Returned_date, BL.Date_Out), CASE WHEN BL.Returned_date IS NULL AND CURRENT_DATE > BL.Due_Date THEN ‘Late’ ELSE ‘On Time’ END
+FROM BORROWER BR
+JOIN BOOK_LOANS BL ON BR.Card_No = BL.Card_No
+JOIN BOOK B ON BL.Book_Id = B.Book_Id
+JOIN BOOK_AUTHOR BA ON B.Book_Id = BA.Book_Id
+WHERE BR.Name = ‘Ethan Martinez’
+ORDER BY BL.Date_Out;
+
+SELECT DISTINCT	BR.Name, BR.Address
+FROM BORROWER BR
+JOIN BOOK_LOANS BL ON BR.Card_No = BL.Card_No
+JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+WHERE LB.Branch_Name = 'West Branch';
+
+SELECT B.Title, MAX(julianday(BL.Returned_date) - julianday(BL.Date_Out))
+FROM BOOK B
+JOIN BOOK_LOANS BL ON B.Book_Id = BL.Book_Id
+GROUP BY B.Title;
+
+CREATE VIEW	REPORT_FOR_ETHAN_MARTINEZ (BOOK_TITLE, BOOK_AUTHOR, DAYS_BORROWED) AS
+SELECT B.Title, BA.Author_Name, julianday(BL.Returned_date) - julianday(BL.Date_Out), CASE WHEN BL.Returned_date IS NULL AND CURRENT_DATE > BL.Due_Date THEN 'Late’'ELSE 'On Time' END
+FROM BORROWER BR
+JOIN BOOK_LOANS BL ON BR.Card_No = BL.Card_No
+JOIN BOOK B ON BL.Book_Id = B.Book_Id
+JOIN BOOK_AUTHOR BA ON B.Book_Id = BA.Book_Id
+WHERE BR.Name = 'Ethan Martinez'
+ORDER BY BL.Date_Out;
+
+
+INSERT INTO	BORROWER (Name, Address, Phone)
+VALUES		('Nam Nguyen', '3400 Kalgary Ct, Fort Worth, TX 76179', '682-715-0741');
+
+UPDATE BORROWER
+SET Phone = '(837) 721-8965'
+WHERE Name = 'Nam Nguyen';
