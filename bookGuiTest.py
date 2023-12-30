@@ -1,3 +1,7 @@
+"""
+Created by: Paul, Sergio, and Nam
+"""
+
 import tkinter as tk
 import sqlite3
 import datetime
